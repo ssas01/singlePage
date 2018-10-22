@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+obj = {
+    GetApi () {
+    let paramList=['1','2','3'];
+    let axiosArr = [] // 异步请求的数组
+    for(var j=0;j<paramList.length;j++){
+        axiosArr[j] = api.qh(this.parmasEnd)
+        // 单个请求
+        axiosArr[j].then((res) => {
+            console.log(j);//3
+            this.resList.push(res);
+            
+        }); 
+    }
+    Promise.all(axiosArr).then(()=>{
+        // 所有异步请求完成了， 调用函数吧
+    })
+},
+
+getResList() {
+    console.log(typeof this.resList);//object;
+}
+}
+</script>
+</body>
+</html>

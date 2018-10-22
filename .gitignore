@@ -1,0 +1,4 @@
+node_modules
+build/main.dll.js
+dist
+test
