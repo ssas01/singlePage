@@ -6,6 +6,15 @@ const ShowPictureComponent = (resolve) => require(['pages/show_picture/ShowPictu
 const UserInfoComponent = (resolve) => require(['pages/user_info/UserInfoComponent.vue'], resolve)
 const PlaceHolderComponent = (resolve) => require(['pages/else/PlaceHolderComponent.vue'], resolve)
 
+
+const WomenClothesComponent = (resolve) => require(['pages/else/secondPage/WomenClothesComponent.vue'], resolve)
+const MenClothesComponent = (resolve) => require(['pages/else/secondPage/MenClothesComponent.vue'], resolve)
+const ChildrenClothesComponent = (resolve) => require(['pages/else/secondPage/ChildrenClothesComponent.vue'], resolve)
+
+const ChildrenPantsComponent = (resolve) => require(['pages/else/secondPage/ChildrenPantsComponent.vue'], resolve)
+const ChildrenHatComponent = (resolve) => require(['pages/else/secondPage/ChildrenHatComponent.vue'], resolve)
+
+
 export default [
     {
         path: '/',
@@ -26,6 +35,39 @@ export default [
     }, {
         path: '/else',
         name: URL.ELSE,
-        component: PlaceHolderComponent
+        component: PlaceHolderComponent,
+        children: [
+            // 配置第一个空路径，当匹配 /else 的时候 默认选中第一个子路由
+            {
+                path: '',
+                redirect: 'women-clothes'
+            },
+            {
+                path: 'women-clothes',
+                component: WomenClothesComponent
+            },
+            {
+                path: 'men-clothes',
+                component: MenClothesComponent
+            },
+            {
+                path: 'children-clothes',
+                component: ChildrenClothesComponent,
+                children: [
+                    {
+                        path: '',
+                        redirect: 'pants'
+                    },
+                    {
+                        path: 'pants',
+                        component: ChildrenPantsComponent
+                    },
+                    {
+                        path: 'hat',
+                        component: ChildrenHatComponent
+                    }
+                ]
+            }
+        ]
     }
 ]

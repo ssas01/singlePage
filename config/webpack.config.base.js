@@ -1,16 +1,21 @@
 const path = require('path')
 const os = require('os')
+// 多线程构建
 const HappyPack = require('happypack')
-const MiniCssExtractPlugin = require("mini-css-extract-plugin")
+// ExtractTextPlugin 改变项，为了将 css 提取出来
+const MiniCssExtractPlugin = require ("mini-css-extract-plugin") 
+// 生成模板，并将出口产生的文件自动插入到 html 中
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+// vue-loader 15 中需要插件
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
-
 const isDev = process.env.NODE_ENV === 'development'
 
 // js less 图片 字体
 // 插件+devServer
+
+// sass 缩进和换行，scss 完全兼容 css 语法
 const baseConfig = {
-    mode: 'development',
+    mode: 'development',// webpack 4
     module: {
         rules: [
             {
@@ -25,19 +30,25 @@ const baseConfig = {
                     extractCSS: !isDev,
                     loaders: {
                         js: 'happypack/loader?id=babel',
-                        css: 'vue-style-loader!css-loader!sass-loader',
-                        scss: 'vue-style-loader!css!sass'
+                        css: 'vue-style-loader!css-loader!sass-loader'
                     }
-                }
+                },
             },
             {
                 test: /\.css$/,
                 exclude: /node_modules/,
                 use: isDev
-                    ? 'happypack/loader?id=css'
+                    // 这里使用 happypack 定义的 css 导致错误
+                    // 'happypack/loader?id=css' 
+                    ? ['vue-style-loader',
+                    'css-loader',
+                    'postcss-loader']
                     : [
                         {
-                            loader: MiniCssExtractPlugin.loader
+                            loader: MiniCssExtractPlugin.loader,
+                            options: {
+                                publicPath: '/static/'
+                            }
                         },
                         'css-loader',
                         'postcss-loader'
@@ -45,11 +56,22 @@ const baseConfig = {
             },{
                 test: /\.scss$/,
                 exclude: /node_modules/,
+                // 两个环境的区别就在于提取不提取
                 use: isDev
-                    ? 'happypack/loader?id=sass' 
+                    // 这里使用 happypack 定义的 sass 导致错误
+                    // 'happypack/loader?id=sass' 
+                    ? [
+                        'vue-style-loader',
+                        'css-loader',
+                        'postcss-loader',
+                        'sass-loader'
+                    ]
                     : [
                         {
-                            loader: MiniCssExtractPlugin.loader
+                            loader: MiniCssExtractPlugin.loader,
+                            options: {
+                                publicPath: '/static/'
+                            }
                         },
                         'css-loader',
                         'postcss-loader',
@@ -58,19 +80,25 @@ const baseConfig = {
             },{
                 test: /\.(eot|svg|ttf|woff|woff2|nmf|pexe|crx)(\?\S*)?$/,
                 include: /node_modules/,
-                loader: 'file-loader'
+                use: [{
+                    loader: 'file-loader',
+                    options: {
+                        name: 'fonts/[name]_[hash:6].[ext]'
+                    }   
+                }]
             },{
                 test: /\.(png|jpe?g|gif|svg|woff2?|eot|ttf|otf)/,
                 exclude: /node_modules/,
-                loader: 'url-loader',
+                loader: 'url-loader', // 依赖于 file-loader
                 options: {
                     limit: 10000,
-                    name: isDev ? '[path][name].[ext]' : '[path][name]_[hash:6].[ext]'
+                    name: isDev ? '[path][name].[ext]' : '[path][name]_[hash:6].[ext]' // 缓存
                 }
             }
         ]
     },
-    resolve: {
+    // 
+    resolve: { // 创建 resolve 和 import 解析路径
         alias: {
             vue: 'vue/dist/vue.js',
             pages: path.join(__dirname, '../src/pages'),
@@ -83,9 +111,6 @@ const baseConfig = {
     },
     plugins: [
         new VueLoaderPlugin(),
-        new MiniCssExtractPlugin({
-            filename: isDev ? '[name].css' : '[name].[hash].css'
-        }),
         new HappyPack({
             id: 'css',
             loaders: [
@@ -96,7 +121,7 @@ const baseConfig = {
             threads: os.cpus().length
         }),
         new HappyPack({
-            id: 'scss',
+            id: 'sass',
             loaders: [
                 'vue-style-loader',
                 'css-loader',
@@ -117,6 +142,7 @@ const baseConfig = {
             ],
             threads: os.cpus().length
         }),
+        // 在 usd 中可以使用传入的模板
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, '../index.template.usd'),
             chunksSortMode: 'dependency',
@@ -127,3 +153,5 @@ const baseConfig = {
 }
 
 module.exports = baseConfig
+
+// babel-loader vue-loader postcss-loader

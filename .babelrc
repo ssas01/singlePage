@@ -1,5 +1,4 @@
 {
     "presets": ["es2015", "stage-2"],
     "plugins": ["transform-runtime"]
-    // 默认 babel 自动对每个文件 runtime 注入，这里禁用之后，引入 babel-plugin-transform-runtime ，所有辅助代码从这里引用
 }

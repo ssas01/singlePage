@@ -13,6 +13,7 @@ module.exports = {
     },
     "plugins": ["html"],
     "rules": { // 规则
+        "no-debugger": production ? 2 : 0,
         "no-console": production ? 2 : 0,
         "no-unused-vars": production ? 2 : 0,
         "indent": [2, 4, {

@@ -1,13 +1,14 @@
 // 使用 es6 模块
 import Vue from 'vue'
-import VueRouter from 'vue-router'
 import SkeletonComponent from './pages/main/SkeletonComponent.vue'
 import router from './router/router'
+import store from './store/store'
 
-import './common/reset.css'
-import './common/main.scss'
+import './styles/reset.css'
+import './styles/main.scss'
+import './styles/fonts.scss'
 
-Vue.use(VueRouter)
+import 'common/directives/focus.js'
 
 const app = new Vue({
     el: '#root',
@@ -15,12 +16,9 @@ const app = new Vue({
         <SkeletonComponent>
         </SkeletonComponent>
     `,
-    // mixin: [],
     components: {
         SkeletonComponent
     },
-    router
-    // store
+    router,
+    store
 })
-
-
